@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+#
+# gitstat | find git repos and print git status
+# requires: bash 3.2+, find, git
+
+MAGENTA="\033[0;35m"
+RESET="\033[0m"
+
+trap 'echo -e "\nSIGINT Received... exiting"; exit 130' SIGINT
+
+err() {
+  # handle errors (send to standard error)
+  echo "$*" >&2
+}
+
+show_help() {
+  # help text
+  echo "Usage: ${0##*/} [/path/to/directory]"
+  echo "Options:"
+  echo "  -h, --help    Show this help menu"
+  echo ""
+}
+
+parse_options() {
+  # check for long "--help"
+  if [[ "$1" == "--help" ]]; then
+    show_help
+    exit 0
+  fi
+
+  while getopts ":h" opt; do
+  case $opt in
+    h) show_help; exit 0 ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      show_help
+      exit 1
+      ;;
+    esac
+  done
+}
+
+get_git_repos() {
+  # find all .git repositories under $1 path and place them into the array
+  while IFS= read -r repo_dir; do
+    git_repos+=("${repo_dir}")
+  done < <(find "${1}" -type d -name ".git" -not -path "*/.*/*" \
+                -exec dirname {} \; 2>/dev/null)
+}
+
+### main script flow
+# parse options
+parse_options "$@"
+
+# check for existance if $1; if it doesn't exist, set $1 to pwd
+if [[ -z "$1" ]]; then
+  set -- .
+fi
+
+# make sure that $1 is a valid directory
+if [[ ! -d "${1}" ]]; then
+  err "${1} is not a valid directory."
+  exit 1
+fi
+
+get_git_repos "$1"
+echo
+
+# iterate through the array created in get_git_repos() and show git status
+for d in "${git_repos[@]}"; do
+  printf -- "--- "
+  printf "${MAGENTA}%s${RESET}\n" "${d%%\/.git}"
+  cd "${d}" || exit 1
+  git status
+  printf -- "---\n\n"
+  cd - >/dev/null 2>&1 || exit 1
+done
