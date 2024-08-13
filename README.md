@@ -1,5 +1,5 @@
 # My Bash scripts
-Contains Bash scripts I've written to help me with small tasks.
+Contains Bash scripts I've written to help with small tasks.
 
 ---
 
