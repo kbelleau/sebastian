@@ -35,15 +35,9 @@ parse_options() {
   while getopts ":hcrs" opt; do
     case "$opt" in
       h) show_help; exit 0 ;;
-      c)
-        c="c"
-        ;;
-      r)
-        r="r"
-        ;;
-      s)
-        s="s"
-        ;;
+      c) c="c" ;;
+      r) r="r" ;;
+      s) s="s" ;;
       \?)
         err "Invalid option: -$OPTARG"
         show_help
@@ -167,6 +161,8 @@ get_ip_pripub() {
 
   if (( o_a[0] == 10 )); then
     t="private"
+  elif (( o_a[0] == 169 && o_a[1] == 254 )); then
+    t="private"
   elif (( o_a[0] == 172 && o_a[1] >= 16 && o_a[1] <= 31 )); then
     t="private"
   elif (( o_a[0] == 192 && o_a[1] == 168 )); then
@@ -207,6 +203,13 @@ get_ip_special() {
 }
 
 main() {
+  # check for at least one argument before getopts and shift
+  if [[ $# -le 0 ]]; then
+    err "One argument required: <option> and/or <ip address>"
+    echo "---"
+    show_help
+    exit 1
+  fi
   local c r s
   parse_options "$@"
   shift $((OPTIND - 1)) # shift $@ past optional flags
