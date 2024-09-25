@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # classip :: ipv4 class information
-# requires: bash 3.2+
+# requires: bash 4.0+
 
 trap 'echo -e "\nSIGINT Received... exiting"; exit 130' SIGINT
 
