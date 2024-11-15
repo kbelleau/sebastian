@@ -59,8 +59,8 @@ run the command to just list git directories, ignoring any directories under `./
 
 ---
 
-### n2c
-`n2c` is a sed script that converts line-breaks ('\n') into commas. It can be most commonly used to convert file of line-break'd entries into a comma-separated line.
+### ncs
+`ncs` is a sed script that converts line-breaks ('\n') into commas. It can be used to convert file of line-break'd entries into a comma-separated line.  
 
 --- example  
 ```sh
@@ -70,7 +70,7 @@ strawberry
 cherry
 blueberry
 
-$ n2c fruits 
+$ ncs fruits 
 banana,strawberry,cherry,blueberry
 ```
 
