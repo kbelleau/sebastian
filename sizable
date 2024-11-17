@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # sizable :: print largest n files and/or directories with their unit size
-# requires: bash 4.0+, find, sort, head, xargs
+# requires: bash 4.0+, find, sort, du, xargs, head, realpath
 
 trap 'echo -e "\nSIGINT Received... exiting"; exit 130' SIGINT
 
@@ -66,7 +66,7 @@ validate_directories() {
   done
 
   # return
-  echo "${valid_dirs[@]}"
+  echo -n "${valid_dirs[@]}"
 }
 
 run_sizable_files() {
@@ -75,7 +75,10 @@ run_sizable_files() {
   # ARG $1: $dir, the directory to run from
   # ARG $2: $headcount, the number of files to print
 
-  echo "Files under $1"
+  # using realpath to show a full fs path
+  local fpath
+  fpath=$(realpath "$1")
+  printf "files \t%s\n" "$fpath"
   find "$1" -type f -print0 2>/dev/null \
     | xargs -0 du -h \
     | sort -rh \
@@ -89,7 +92,10 @@ run_sizable_dirs() {
   # ARG $1: $top_dir, the directory to run from
   # ARG $2: headcount, the number of directories to print
 
-  echo "Directories under $1"
+  # using realpath to show a full fs path
+  local fpath
+  fpath=$(realpath "$1")
+  printf "dirs \t%s\n" "$fpath"
   find "$1" -type d -print0 2>/dev/null \
     | xargs -0 du -h \
     | sort -rh \
@@ -104,11 +110,11 @@ main () {
   parse_options "$@"
   shift $((OPTIND - 1)) # shift $@ past optional flags
 
-  # if neither -d or -f were used, set -f (show_files)
+  # if neither -d or -f were used, set -f (show_files) as a default
   [[ -z "$show_dirs" ]] && [[ -z "$show_files" ]] && show_files="1"
 
-  # verify we have at least one argument after options
-  [[ $# -lt 1 ]] && err "At least one directory path required" && exit 1
+  # verify we have at least one argument after options, if not set it to pwd
+  [[ $# -lt 1 ]] && set -- '.'
 
   # ensure all directories in remaining $@ are valid
   readarray -t valid_dirs < <(validate_directories "$@")

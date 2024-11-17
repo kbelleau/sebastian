@@ -131,6 +131,10 @@ Options:
 ```
 
 --- examples  
+
+`sizable`  
+show the 10 largest files in your current directory.  
+
 `sizable aaa/`  
 show the 10 largest files in the `aaa/` directory.  
 
@@ -139,6 +143,3 @@ show the 15 larges files in the `bbb/` directory, then show the 15 largest files
 
 `sizable -d 6 eee/`  
 show the 6 largest directorys in the `eee/` directory.  
-
-`sizable -df yyy/ zzz/`  
-show the 10 largest files and directories in the `yyy/` directory, then the `zzz/` directory.
