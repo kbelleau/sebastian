@@ -30,7 +30,7 @@ parse_options() {
     exit 0
   fi
 
-  # c r s must be already delcared in parent function
+  # $class $private $special must be already delcared in parent function
   local opt
   while getopts ":hcrs" opt; do
     case "$opt" in
