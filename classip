@@ -7,7 +7,7 @@ trap 'echo -e "\nSIGINT Received... exiting"; exit 130' SIGINT
 
 err() {
   # send errors to standard error
-  echo "$*" >&2
+  echo "[${0##*/}] error: $*" >&2
 }
 
 show_help() {
